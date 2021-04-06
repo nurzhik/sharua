@@ -648,7 +648,8 @@ CREATE TABLE `results` (
   `user_id` int(11) NOT NULL,
   `moderator_id` int(11) DEFAULT NULL,
   `questionnaire_id` int(11) NOT NULL,
-  `moderator_fio` varchar(255) DEFAULT NULL
+  `moderator_fio` varchar(255) DEFAULT NULL,
+  `xmlsignature` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

@@ -8,9 +8,11 @@
                     <div class="personal_unit_title"><?=$data['Questionnaire']['title_'.$l]?></div>
                 </div>
                 <div class="questionnaire_inner">
-                    <a href="javascript:;" class="questionnaire_inner_btn_back">Назад к выбору собрания</a>
+                    <a href="/users/my_questionnaires" class="questionnaire_inner_btn_back">Назад к выбору собрания</a>
                     <?php if(!empty($questions)): ?>
-                    <form action="/users/questionnairesend" method="POST">
+                    <form id="questions" action="/users/questionnairesend" method="POST">
+                        <?=$this->Session->flash('bad')?>
+                        <input id="signature" type="hidden" name="data[signature]"/>
                         <input type="hidden" name="data[Question][questionnaire_id]"  value="<?=$data['Questionnaire']['id']?>">
                         <?php if(!empty($check_moderators)): ?>
                             <input type="hidden" name="data[Question][moderator_id]"  value="<?=$check_moderators['Responsible']['moderator_id']?>">
@@ -40,30 +42,93 @@
                              
                             </div>
                         <?php endforeach ?>
-                       
-                        <?php if(!$check_moderators): ?>
-                             <button type="submit" class="main_btn ">Подписать</button>
+                        <?php if($check_moderators): ?>
+                             <span id="submit" style="cursor: pointer;" class="main_btn ">Подписать</span>
                         <?php endif ?>
                     </form>
                     <?php else: ?>
                        
                         <?php foreach ($results as $key => $item): ?>
-                            <?php foreach ($item['results'] as $q1): ?>
-                                <div class="questionnaire_inner_blog">
+                            <?php foreach ($item['results'] as $k => $q1): ?>
+                                <div class="questionnaire_inner_blog questions">
                                     <div class="questionnaire_inner_title"> <?=$q1['question'] ?></div>
                                     <div class="questionnaire_inner_unit">
-                                        <div class="questionnaire_inner_row">
+                                        <div style="color: <?=($q1['answer'] != $signature['data[Question][results]['.$k.'][answer]'])?'red':'green'?>" class="questionnaire_inner_row answer">
                                                <?=$q1['answer'] ?>
                                         </div>
                                     </div>
+                                    
+                                    <?php if($q1['answer'] != $signature['data[Question][results]['.$k.'][answer]']): ?>
+                                        <div class="questionnaire_inner_unit">
+                                            <div class="questionnaire_inner_row answer">
+                                            подписанный ответ <?=$signature['data[Question][results]['.$k.'][answer]']?>
+                                            </div>
+                                        </div>
+                                    <?php endif ?>
+                                    
                                     <div class="textarea" ><?=$q1['desc'] ?></div>
                                 </div>
                             <?php endforeach ?>
                         <?php endforeach ?>
-                
+                        <hr/>
+                        <div class="questionnaire_inner_title">Подпись <?=($isValidSign == true)?'Валидный':'Не валидный'?></div>
+                        <?php if($isValidSign == true):?>
+                            <div class="questionnaire_inner_title">от <?=$commonName?> <?=$iin?> </div>
+                        <?php endif ?>
+                        <textarea style="min-height: 200px" class="textarea"><?=$xmlsignature?></textarea>
                     <?php endif ?>
                 </div>
             </div>
         </div>
     </div>
 </section>
+<script src="/ncalayer.js"></script> 
+<script>
+window.addEventListener("load", function(){
+    $.fn.serializeObject = function(){
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
+    $("#submit").click(function(){
+        if(webSocket.readyState != webSocket.OPEN){
+            if(confirm("Включите NCALayer и нажмите OK")){
+                initNcaLayer();
+            }
+        }
+        console.log("Click");
+        $("#signature").val("");
+        var signData = encodeURI(JSON.stringify($("#questions").serializeObject()));
+        signXml("PKCS12", "SIGNATURE", "<root><Document>"+signData+"</Document></root>", postForm);
+    });
+
+    window.postForm = function(ev){
+
+        if(ev.code == "200") {
+            console.log("Success");
+            $("#signature").val(ev.responseObject);
+            $("#questions").submit();
+        }else{
+            alert("Ошибка подписи");
+        }
+    }
+
+ 
+    if(webSocket.readyState != webSocket.OPEN){
+        initNcaLayer();
+    }
+    
+});
+
+</script>
