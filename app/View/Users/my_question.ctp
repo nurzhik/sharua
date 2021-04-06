@@ -1,63 +1,81 @@
-<section class="personal perc">
+<section class="section cabinet-section">
     <div class="container">
-        <h1>личный кабинет</h1>
-        <div class="personal_wrapper">
-             <?=$this->element('sidebar') ?>
-            <div class="personal_unit">
-                <div class="personal_payment">
-                    <div class="personal_unit_title"><?=$data['Questionnaire']['title_'.$l]?></div>
+        <ul class="breadcrumbs">
+            <li><a href=""> Главная </a></li>
+            <li><a href=""> Личный кабинет </a></li>
+        </ul>
+        <div class="title">Личный кабинет</div>
+        <div class="cabinet-block">
+           <?=$this->element('sidebar') ?>
+
+            <div class="links-body">
+                <div class="links-title-block">
+                    <div class="links-title"><?=$data['Questionnaire']['title_'.$l]?></div>
                 </div>
-                <div class="questionnaire_inner">
-                    <a href="/users/my_questionnaires" class="questionnaire_inner_btn_back">Назад к выбору собрания</a>
+                <div class="links-content padding-0">
                     <?php if(!empty($questions)): ?>
                     <form id="questions" action="/users/questionnairesend" method="POST">
                         <?=$this->Session->flash('bad')?>
                         <input id="signature" type="hidden" name="data[signature]"/>
                         <input type="hidden" name="data[Question][questionnaire_id]"  value="<?=$data['Questionnaire']['id']?>">
+                        <a href="/<?=$lang?>users/my_questionnaires" class="before-page padding-st"> 
+                            <svg width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8.02734 11.9453C8.30078 11.6719 8.27344 11.2617 8.02734 10.9883L4.71875 7.84375H12.5938C12.9492 7.84375 13.25 7.57031 13.25 7.1875V6.3125C13.25 5.95703 12.9492 5.65625 12.5938 5.65625H4.71875L8.02734 2.53906C8.27344 2.26562 8.30078 1.85547 8.02734 1.58203L7.42578 0.980469C7.17969 0.734375 6.74219 0.734375 6.49609 0.980469L1.19141 6.3125C0.917969 6.55859 0.917969 6.96875 1.19141 7.21484L6.49609 12.5469C6.74219 12.793 7.15234 12.793 7.42578 12.5469L8.02734 11.9453Z" fill="#EF811F"/>
+                            </svg>
+                            <span>Назад к выбору собрания</span>    
+                        </a>
                         <?php if(!empty($check_moderators)): ?>
                             <input type="hidden" name="data[Question][moderator_id]"  value="<?=$check_moderators['Responsible']['moderator_id']?>">
                             <input type="hidden" name="data[Question][moderator_fio]"  value="<?=$check_moderators['Responsible']['moderator_fio']?>">
                         <?php endif ?>
+
+
                         <?php foreach ($questions as $key => $item): ?>
-                            <div class="questionnaire_inner_blog">
-                                <div class="questionnaire_inner_title"><?=$item['Question']['title_'.$l] ?> </div>
-                                <div class="questionnaire_inner_unit">
-                                    <input type="hidden" name="data[Question][results][q<?=$key+1?>][question]" value="<?=$item['Question']['title_ru'] ?>">
-                                    <div class="questionnaire_inner_row">
-                                        <input id="q<?=$key?>a1" type="radio" name="data[Question][results][q<?=$key+1?>][answer]" value="Поддерживаю">
-                                        <label for="q<?=$key?>a1">Поддерживаю</label>
-                                    </div>
-                                    <div class="questionnaire_inner_row">
-                                        <input id="q<?=$key?>a2" type="radio" name="data[Question][results][q<?=$key+1?>][answer]" value="Не поддерживаю">
-                                        <label for="q<?=$key?>a2">Не поддерживаю</label>
-                                    </div>
-                                    <div class="questionnaire_inner_row">
-                                        <input id="q<?=$key?>a3" type="radio" name="data[Question][results][q<?=$key+1?>][answer]" value="Воздерживаюсь от голоса">
-                                        <label for="q<?=$key?>a3">Воздерживаюсь от голоса</label>
-                                    </div>
+                            <div class="oprosnik-inner__item padding-st padding-t-b">
+                                <div class="oprosnil__title"><?=$item['Question']['title_'.$l] ?></div>
+                                <input type="hidden" name="data[Question][results][q<?=$key+1?>][question]" value="<?=$item['Question']['title_ru'] ?>">
+                                <div class="opros-radio">
+                                    <label for="q<?=$key?>a1">
+                                        <input type="radio" id="q<?=$key?>a1" name="data[Question][results][q<?=$key+1?>][answer]" value="Поддерживаю">
+                                        <span>Поддерживаю</span>
+                                    </label>
+                                    <label for="q<?=$key?>a2">
+                                        <input type="radio" id="q<?=$key?>a2" name="data[Question][results][q<?=$key+1?>][answer]" value="Не поддерживаю">
+                                        <span>Не поддерживаю</span>
+                                    </label>
+                                    <label for="q<?=$key?>a3">
+                                        <input type="radio" id="q<?=$key?>a3"  name="data[Question][results][q<?=$key+1?>][answer]" value="Воздерживаюсь от голоса">
+                                        <span>Воздерживаюсь от голоса</span>
+                                    </label>
                                 </div>
-                                
-                                    <textarea name="data[Question][results][q<?=$key+1?>][desc]" id="" cols="3" rows="1" class="textarea" placeholder="Добавить комментарий к ответу"></textarea>
-                                
-                             
+                                <div class="opros-input" >
+                                    <input type="text" name="data[Question][results][q<?=$key+1?>][desc]" placeholder="Добавить комментарий к ответу">
+                                </div>
                             </div>
                         <?php endforeach ?>
+                    
                         <?php if($check_moderators): ?>
-                             <span id="submit" style="cursor: pointer;" class="main_btn ">Подписать</span>
+                            <div class="padding-st">
+                                <span id="submit" style="cursor: pointer;" class="opros-btn ">Подписать</span>
+                            </div>
                         <?php endif ?>
                     </form>
                     <?php else: ?>
-                       
+                        <a href="/<?=$lang?>users/my_questionnaires" class="before-page padding-st"> 
+                            <svg width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8.02734 11.9453C8.30078 11.6719 8.27344 11.2617 8.02734 10.9883L4.71875 7.84375H12.5938C12.9492 7.84375 13.25 7.57031 13.25 7.1875V6.3125C13.25 5.95703 12.9492 5.65625 12.5938 5.65625H4.71875L8.02734 2.53906C8.27344 2.26562 8.30078 1.85547 8.02734 1.58203L7.42578 0.980469C7.17969 0.734375 6.74219 0.734375 6.49609 0.980469L1.19141 6.3125C0.917969 6.55859 0.917969 6.96875 1.19141 7.21484L6.49609 12.5469C6.74219 12.793 7.15234 12.793 7.42578 12.5469L8.02734 11.9453Z" fill="#EF811F"/>
+                            </svg>
+                            <span>Назад к выбору собрания</span>    
+                        </a>
                         <?php foreach ($results as $key => $item): ?>
                             <?php foreach ($item['results'] as $k => $q1): ?>
-                                <div class="questionnaire_inner_blog questions">
-                                    <div class="questionnaire_inner_title"> <?=$q1['question'] ?></div>
+                                <div class="oprosnik-inner__item padding-st padding-t-b">
+                                    <div class="oprosnil__title"> <?=$q1['question'] ?></div>
                                     <div class="questionnaire_inner_unit">
-                                        <div style="color: <?=($q1['answer'] != $signature['data[Question][results]['.$k.'][answer]'])?'red':'green'?>" class="questionnaire_inner_row answer">
+                                        <div class="questionnaire_inner_row">
                                                <?=$q1['answer'] ?>
                                         </div>
                                     </div>
-                                    
                                     <?php if($q1['answer'] != $signature['data[Question][results]['.$k.'][answer]']): ?>
                                         <div class="questionnaire_inner_unit">
                                             <div class="questionnaire_inner_row answer">
@@ -65,17 +83,11 @@
                                             </div>
                                         </div>
                                     <?php endif ?>
-                                    
                                     <div class="textarea" ><?=$q1['desc'] ?></div>
                                 </div>
                             <?php endforeach ?>
                         <?php endforeach ?>
-                        <hr/>
-                        <div class="questionnaire_inner_title">Подпись <?=($isValidSign == true)?'Валидный':'Не валидный'?></div>
-                        <?php if($isValidSign == true):?>
-                            <div class="questionnaire_inner_title">от <?=$commonName?> <?=$iin?> </div>
-                        <?php endif ?>
-                        <textarea style="min-height: 200px" class="textarea"><?=$xmlsignature?></textarea>
+                
                     <?php endif ?>
                 </div>
             </div>
